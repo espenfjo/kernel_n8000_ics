@@ -276,7 +276,7 @@ static int mxt_get_id_info(struct mxt_data *data)
 		dev_err(&data->client->dev, "Read fail. IC information\n");
 		goto out;
 	} else {
-		dev_info(&data->client->dev,
+		dev_dbg(&data->client->dev,
 			"family: 0x%x variant: 0x%x version: 0x%x"
 			" build: 0x%x matrix X,Y size:  %d,%d"
 			" number of obect: %d\n"
@@ -342,11 +342,11 @@ static int mxt_get_object_table(struct mxt_data *data)
 		}
 	}
 
-	dev_info(&data->client->dev, "maXTouch: %d Objects\n",
+	dev_dbg(&data->client->dev, "maXTouch: %d Objects\n",
 			data->info.object_num);
 #if TSP_DEBUG_INFO
 	for (i = 0; i < data->info.object_num; i++) {
-		dev_info(&data->client->dev, "Object:T%d\t\t\t"
+		dev_dbg(&data->client->dev, "Object:T%d\t\t\t"
 			"Address:0x%x\tSize:%d\tInstance:%d\tReport Id's:%d\n",
 			data->objects[i].object_type,
 			data->objects[i].start_address,
@@ -385,12 +385,12 @@ static void __devinit mxt_make_reportid_table(struct mxt_data *data)
 		}
 	}
 
-	dev_info(&data->client->dev, "maXTouch: %d report ID\n",
+	dev_dbg(&data->client->dev, "maXTouch: %d report ID\n",
 			data->max_report_id);
 
 #if TSP_DEBUG_INFO
 	for (i = 0; i < data->max_report_id; i++) {
-		dev_info(&data->client->dev, "Report_id[%d]:\tT%d\n",
+		dev_dbg(&data->client->dev, "Report_id[%d]:\tT%d\n",
 			i, data->rid_map[i].object_type);
 	}
 #endif
@@ -496,7 +496,7 @@ static void set_charger_config(struct mxt_data *data,
 				return ;
 			}
 			if (data->debug_log)
-				dev_info(&data->client->dev,
+				dev_dbg(&data->client->dev,
 					"%s : %d %d %d\n",
 					__func__, type, offset, val);
 		}
@@ -579,7 +579,7 @@ void mxt_t61_timer_set(struct mxt_data *data, u8 mode, u8 cmd, u16 ms_period)
 			__func__, SPT_TIMER_T61, object->start_address);
 
 	if (ms_period)
-		dev_info(&data->client->dev,
+		dev_dbg(&data->client->dev,
 			"T61 Timer Enabled %d\n", ms_period);
 }
 
@@ -591,12 +591,12 @@ void mxt_t8_autocal_set(struct mxt_data *data, u8 mstime)
 	if (mstime) {
 		data->check_autocal = 1;
 		if (data->debug_log)
-			dev_info(&data->client->dev,
+			dev_dbg(&data->client->dev,
 				"T8 Autocal Enabled %d\n", mstime);
 	} else {
 		data->check_autocal = 0;
 		if (data->debug_log)
-			dev_info(&data->client->dev,
+			dev_dbg(&data->client->dev,
 				"T8 Autocal Disabled %d\n", mstime);
 	}
 
@@ -626,7 +626,7 @@ static void mxt_check_coordinate(struct mxt_data *data,
 	if (tcount[id] > 1) {
 		distance = abs(pre_x[id][0] - *px) + abs(pre_y[id][0] - *py);
 		if (data->debug_log)
-			dev_info(&data->client->dev,
+			dev_dbg(&data->client->dev,
 				"Check Distance ID:%d, %d\n",
 				id, distance);
 
@@ -679,17 +679,17 @@ static void mxt_report_input_data(struct mxt_data *data)
 
 #if TSP_DEBUG_INFO
 		if (data->fingers[i].state == MXT_STATE_PRESS)
-			dev_info(&data->client->dev, "P: id[%d] X[%d],Y[%d]"
+			dev_dbg(&data->client->dev, "P: id[%d] X[%d],Y[%d]"
 			" comp[%d], sum[%d] size[%d], pressure[%d]\n",
 				i, data->fingers[i].x, data->fingers[i].y,
 				data->fingers[i].component, data->sumsize,
 				data->fingers[i].w, data->fingers[i].z);
 #else
 		if (data->fingers[i].state == MXT_STATE_PRESS)
-			dev_info(&data->client->dev, "P: id[%d]\n", i);
+			dev_dbg(&data->client->dev, "P: id[%d]\n", i);
 #endif
 		else if (data->fingers[i].state == MXT_STATE_RELEASE)
-			dev_info(&data->client->dev, "R: id[%d] M[%d]\n",
+			dev_dbg(&data->client->dev, "R: id[%d] M[%d]\n",
 				i, data->fingers[i].mcount);
 
 		if (data->fingers[i].state == MXT_STATE_RELEASE) {
@@ -852,10 +852,10 @@ static void mxt_treat_T42_object(struct mxt_data *data, u8 *msg)
 {
 	if (msg[1] & 0x01)
 		/* Palm Press */
-		dev_info(&data->client->dev, "palm touch detected\n");
+		dev_dbg(&data->client->dev, "palm touch detected\n");
 	else
 		/* Palm release */
-		dev_info(&data->client->dev, "palm touch released\n");
+		dev_dbg(&data->client->dev, "palm touch released\n");
 }
 
 static void mxt_treat_T57_object(struct mxt_data *data, u8 *msg)
@@ -868,7 +868,7 @@ static void mxt_treat_T57_object(struct mxt_data *data, u8 *msg)
 	if (data->check_antitouch) {
 		if (tch_area) {
 			if (data->debug_log)
-				dev_info(&data->client->dev,
+				dev_dbg(&data->client->dev,
 					"TCHAREA=%d\n", tch_area);
 
 			/* First Touch After Calibration */
@@ -886,7 +886,7 @@ static void mxt_treat_T57_object(struct mxt_data *data, u8 *msg)
 			if (atch_area > 5) {
 				if (atch_area - tch_area > 0) {
 					if (data->debug_log)
-						dev_info(&data->client->dev,
+						dev_dbg(&data->client->dev,
 							"Case:1 TCHAREA=%d ATCHAREA=%d\n",
 							tch_area, atch_area);
 					mxt_calibrate_chip(data);
@@ -897,7 +897,7 @@ static void mxt_treat_T57_object(struct mxt_data *data, u8 *msg)
 			if (atch_area) {
 				/* Only Anti-touch */
 				if (data->debug_log)
-					dev_info(&data->client->dev,
+					dev_dbg(&data->client->dev,
 						"Case:2 TCHAREA=%d ATCHAREA=%d\n",
 						tch_area, atch_area);
 				mxt_calibrate_chip(data);
@@ -910,7 +910,7 @@ static void mxt_treat_T57_object(struct mxt_data *data, u8 *msg)
 			if ((atch_area - tch_area) > 8) {
 				if (tch_area < 35) {
 					if (data->debug_log)
-						dev_info(&data->client->dev,
+						dev_dbg(&data->client->dev,
 							"Cal Not Good 1 - %d %d\n",
 							atch_area, tch_area);
 					mxt_calibrate_chip(data);
@@ -919,7 +919,7 @@ static void mxt_treat_T57_object(struct mxt_data *data, u8 *msg)
 			if (((tch_area - atch_area) >= 40) &&
 				(atch_area > 4)) {
 				if (data->debug_log)
-					dev_info(&data->client->dev,
+					dev_dbg(&data->client->dev,
 						"Cal Not Good 2 - %d %d\n",
 						atch_area, tch_area);
 				mxt_calibrate_chip(data);
@@ -928,7 +928,7 @@ static void mxt_treat_T57_object(struct mxt_data *data, u8 *msg)
 			if (atch_area) {
 				/* Only Anti-touch */
 				if (data->debug_log)
-					dev_info(&data->client->dev,
+					dev_dbg(&data->client->dev,
 						"Cal Not Good 3 - %d %d\n",
 						atch_area, tch_area);
 				mxt_calibrate_chip(data);
@@ -954,7 +954,7 @@ static void mxt_treat_T61_object(struct mxt_data *data, u8 *msg)
 
 		if (data->check_antitouch) {
 			if (data->debug_log)
-				dev_info(&data->client->dev,
+				dev_dbg(&data->client->dev,
 					"SPT_TIMER_T61 Stop\n");
 			data->check_antitouch = 0;
 			data->check_timer = 0;
@@ -1014,7 +1014,7 @@ static irqreturn_t mxt_irq_thread(int irq, void *ptr)
 
 		default:
 			if (data->debug_log)
-				dev_info(&data->client->dev, "Untreated Object type[%d]\t"
+				dev_dbg(&data->client->dev, "Untreated Object type[%d]\t"
 					"message[0x%x,0x%x,0x%x,0x%x,0x%x,0x%x,"
 					"0x%x,0x%x,0x%x]\n",
 					object_type, msg[0], msg[1],
