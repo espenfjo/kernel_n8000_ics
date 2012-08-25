@@ -1,3 +1,24 @@
+        HOW TO FORK AND BUILD
+
+1. Find an arm-eabi-4.4.3 toolchain.  I use the prebuilt one from a CM9 source tree
+
+2. Fork kernel_n8013_ics and initramfs_n8013_kernel
+        http://help.github.com/fork-a-repo/
+
+3. Make sure that initramfs_n8013_kernel and kernel_n8013_ics directories are in the same directory, e.g. structure should look like:
+        working_dir/kernel_n8013_ics
+        working_dir/initramfs_n8013_kernel
+
+5. Export CROSS_COMPILE to point to your toolchain.  Example:
+        export CROSS_COMPILE="/media/extradisk/adodd/cm9/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-"
+
+6. Move into the top directory of the kernel source (kernel_n8013_ics).
+
+7. Execute './build_kernel_n8013.sh'.
+
+8. If the kernel is built successfully, you will find the following file:
+        kernel_n8013_ics/boot.img
+
 	Linux kernel release 3.x <http://kernel.org/>
 
 These are the release notes for Linux version 3.  Read them carefully,
